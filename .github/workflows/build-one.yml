@@ -21,15 +21,6 @@ on:
           - linux
           - mac
           - win
-      target_cpu:
-        description: Target CPU
-        type: choice
-        options:
-          - arm
-          - arm64
-          - x64
-          - x86
-          - wasm
       target_environment:
         description: Target environment
         type: choice
@@ -58,15 +49,18 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build (${{ matrix.cpu }})
     uses: ./.github/workflows/build.yml
     secrets: inherit
+    strategy:
+      matrix:
+        cpu: [arm, arm64, x64, x86]
     with:
       branch: ${{ github.event.inputs.branch }}
       version: ${{ github.event.inputs.version }}
       is_debug: ${{ github.event.inputs.is_debug == 'true' }}
       target_os: ${{ github.event.inputs.target_os }}
-      target_cpu: ${{ github.event.inputs.target_cpu }}
+      target_cpu: ${{ matrix.cpu }}
       target_environment: ${{ github.event.inputs.target_environment }}
       enable_v8: ${{ github.event.inputs.enable_v8 == 'true' }}
       emsdk_version: ${{ github.event.inputs.emsdk_version }}
